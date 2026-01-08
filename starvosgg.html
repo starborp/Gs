@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Starvos | Discord Bot Developer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDgLC1E_Xt5zZRQZJDA8tfTLC5O85GzSlCQxXB6qIX6Dkk7DfNY_GaD3dz&s=10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --primary:#b84cff;
+ --primary-dark:#8a3aff;
+ --secondary:#00d4ff;
+ --accent:#00d4aa;
+ --glass:rgba(0,0,0,.8);
+ --glass-dark:rgba(0,0,0,.9);
+ --glow:rgba(184,76,255,.6);
+}
+
+*{
+ margin:0;padding:0;box-sizing:border-box;
+ font-family:'Inter',Segoe UI,system-ui,sans-serif;
+}
+
+body{
+ background:black;color:white;
+ overflow-x:hidden;
+}
+
+/* 2X ENHANCED BACKGROUND */
+.bg{
+ position:fixed;inset:0;
+ background:url("https://media.tenor.com/cOhgxKZrGqQAAAAM/zoro-one-piece.gif") center/cover no-repeat fixed;
+ z-index:-2;
+ animation:parallax 120s linear infinite;
+ filter:brightness(0.8) contrast(1.1);
+}
+
+@keyframes parallax{
+ 0%,100%{transform:scale(1) rotate(0deg);}
+ 33%{transform:scale(1.05) rotate(0.1deg);}
+ 66%{transform:scale(1.08) rotate(-0.1deg);}
+}
+
+.overlay{
+ position:fixed;inset:0;
+ background:linear-gradient(135deg,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.9) 40%,rgba(0,0,0,0.95) 100%);
+ z-index:-1;
+ animation:pulse 8s ease-in-out infinite;
+}
+
+@keyframes pulse{
+ 0%,100%{opacity:0.95;}
+ 50%{opacity:0.85;}
+}
+
+/* SCROLLBAR 2X */
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--glass-dark);border-radius:5px;}
+::-webkit-scrollbar-thumb{
+ background:linear-gradient(135deg,var(--primary),var(--secondary));
+ border-radius:5px;border:1px solid rgba(255,255,255,0.2);
+}
+::-webkit-scrollbar-thumb:hover{background:var(--primary-dark)}
+
+/* NAV 2X SMOOTH */
+nav{
+ display:flex;justify-content:space-between;align-items:center;
+ padding:1.5rem 4%;
+ position:fixed;top:0;left:0;right:0;
+ backdrop-filter:blur(25px);
+ background:linear-gradient(135deg,rgba(0,0,0,0.95),rgba(0,0,0,0.98));
+ border-bottom:3px solid rgba(255,255,255,0.2);
+ z-index:10000;
+ transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+ box-shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+
+nav.scrolled{background:rgba(0,0,0,0.98);box-shadow:0 20px 60px rgba(0,0,0,0.8);}
+
+.logo{
+ display:flex;align-items:center;gap:1.2rem;
+ font-size:1.6rem;font-weight:900;
+ background:linear-gradient(135deg,var(--primary),var(--secondary),#fff);
+ -webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;
+ background-clip:text;
+ letter-spacing:-0.02em;
+}
+
+.logo img{
+ width:50px;height:50px;
+ border-radius:50%;border:3px solid transparent;
+ background:linear-gradient(135deg,var(--primary),var(--secondary));
+ -webkit-background-clip:padding-box;
+ background-clip:padding-box;
+ box-shadow:0 0 25px var(--glow);
+ transition:all 0.4s ease;
+}
+
+.logo:hover img{transform:scale(1.15) rotate(360deg);}
+
+/* HAMBURGER 2X */
+.hamburger{
+ display:none;flex-direction:column;gap:4px;cursor:pointer;padding:10px;
+ transition:all 0.3s ease;
+}
+
+.hamburger span{
+ width:28px;height:3px;background:linear-gradient(135deg,var(--primary),var(--secondary));
+ border-radius:3px;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+ box-shadow:0 2px 10px var(--glow);
+}
+
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(8px,8px);}
+.hamburger.active span:nth-child(2){opacity:0;transform:scale(0);}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(7px,-7px);}
+
+.menu{
+ display:flex;gap:2rem;align-items:center;
+}
+
+.menu a{
+ color:#fff;text-decoration:none;font-weight:700;
+ font-size:1.1rem;padding:12px 20px;border-radius:12px;
+ position:relative;overflow:hidden;
+ transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+
+.menu a::before{
+ content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+ background:linear-gradient(135deg,var(--primary),var(--secondary));
+ transition:left 0.4s ease;z-index:-1;
+}
+
+.menu a:hover::before{left:0;}
+.menu a:hover{
+ color:#fff;transform:translateY(-3px);
+ box-shadow:0 15px 40px var(--glow);
+}
+
+/* SECTIONS 2X PERFECT */
+.section{
+ min-height:100vh;padding:140px 4% 80px;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ scroll-snap-align:start;scroll-snap-stop:always;
+ position:relative;
+}
+
+.hero-container{
+ background:linear-gradient(135deg,var(--glass),rgba(0,0,0,0.85));
+ backdrop-filter:blur(30px);
+ padding:5rem 4rem;border-radius:32px;
+ max-width:900px;width:100%;
+ border:2px solid rgba(255,255,255,0.25);
+ box-shadow:0 40px 120px rgba(0,0,0,1),inset 0 1px 0 rgba(255,255,255,0.2);
+ text-align:center;
+ animation:float 7s ease-in-out infinite;
+ position:relative;
+ overflow:hidden;
+}
+
+.hero-container::before{
+ content:'';position:absolute;top:-50%;left:-50%;right:-50%;bottom:-50%;
+ background:radial-gradient(circle, rgba(184,76,255,0.1) 0%, transparent 70%);
+ animation:rotate 20s linear infinite;
+}
+
+@keyframes rotate{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+
+@keyframes float{
+ 0%,100%{transform:translateY(0) scale(1);}
+ 50%{transform:translateY(-20px) scale(1.02);}
+}
+
+.hero h1{
+ font-size:4.5rem;font-weight:900;line-height:1.1;
+ margin-bottom:1.8rem;
+ background:linear-gradient(135deg,var(--primary),var(--secondary),#fff);
+ -webkit-background-clip:text;background-clip:text;
+ -webkit-text-fill-color:transparent;
+ letter-spacing:-0.03em;
+ text-shadow:0 0 30px var(--glow);
+}
+
+.hero-subtitle{
+ font-size:1.5rem;font-weight:500;color:#e8e8e8;
+ margin-bottom:2.5rem;line-height:1.6;
+ max-width:700px;margin:0 auto;
+}
+
+/* STATS 2X */
+.hero-stats{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+ gap:2.5rem;margin:4rem 0;
+}
+
+.stat-number{
+ font-size:3rem;font-weight:900;
+ background:linear-gradient(135deg,var(--primary),var(--secondary));
+ -webkit-background-clip:text;background-clip:text;
+ -webkit-text-fill-color:transparent;
+ display:block;
+ animation:countUp 2s ease-out forwards;
+}
+
+.stat-label{
+ font-size:1rem;color:#bbb;font-weight:700;
+ text-transform:uppercase;letter-spacing:1.5px;
+ margin-top:0.8rem;
+}
+
+/* BUTTONS 2X */
+.btn{
+ display:inline-flex;align-items:center;gap:1rem;
+ padding:1.2rem 2.5rem;font-weight:800;font-size:1.1rem;
+ border-radius:20px;text-decoration:none;
+ transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+ position:relative;overflow:hidden;
+ margin:0 0.8rem;
+}
+
+.btn-primary{
+ background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+ color:white;box-shadow:0 15px 50px var(--glow);
+ border:3px solid transparent;
+}
+
+.btn-primary:hover{
+ transform:translateY(-8px) scale(1.05);
+ box-shadow:0 30px 80px rgba(184,76,255,0.8);
+}
+
+.btn-secondary{
+ background:transparent;color:var(--primary);
+ border:3px solid var(--primary);
+ backdrop-filter:blur(10px);
+}
+
+.btn-secondary:hover{
+ background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+ transform:translateY(-6px);box-shadow:0 25px 70px var(--glow);
+}
+
+/* TITLES 2X */
+.section-title{
+ font-size:4rem;font-weight:900;text-align:center;
+ margin-bottom:5rem;
+ background:linear-gradient(135deg,var(--primary),var(--secondary),#fff);
+ -webkit-background-clip:text;background-clip:text;
+ -webkit-text-fill-color:transparent;
+ position:relative;letter-spacing:-0.02em;
+}
+
+.section-title::after{
+ content:'';position:absolute;bottom:-30px;left:50%;
+ transform:translateX(-50%);width:120px;height:5px;
+ background:linear-gradient(135deg,var(--primary),var(--secondary));
+ border-radius:3px;box-shadow:0 10px 30px var(--glow);
+ animation:glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow{0%{box-shadow:0 10px 30px var(--glow);}100%{box-shadow:0 10px 40px var(--glow);}}
+
+/* CARDS 2X BEST */
+.cards{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));
+ gap:3rem;max-width:1400px;width:100%;
+}
+
+.card{
+ background:linear-gradient(135deg,var(--glass),rgba(0,0,0,0.85));
+ backdrop-filter:blur(25px);
+ padding:3rem 2.5rem;border-radius:28px;
+ border:2px solid rgba(255,255,255,0.2);
+ transition:all 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+ position:relative;overflow:hidden;
+ min-height:380px;display:flex;flex-direction:column;
+ box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+
+.card::before{
+ content:'';position:absolute;top:0;left:0;right:0;height:6px;
+ background:linear-gradient(135deg,var(--primary),var(--secondary),var(--accent));
+ transform:scaleX(0);transition:all 0.5s ease;
+ box-shadow:0 5px 20px var(--glow);
+ z-index:2;
+}
+
+.card::after{
+ content:'';position:absolute;top:20px;right:20px;width:60px;height:60px;
+ background:radial-gradient(circle,rgba(184,76,255,0.1) 0%,transparent 70%);
+ border-radius:50%;opacity:0;transition:all 0.5s ease;
+}
+
+.card:hover::before{transform:scaleX(1);}
+.card:hover::after{opacity:1;transform:scale(2);}
+.card:hover{
+ transform:translateY(-25px) scale(1.02);
+ box-shadow:0 60px 150px rgba(0,0,0,0.9),0 0 60px var(--glow);
+ border-color:rgba(255,255,255,0.4);
+}
+
+.card-icon{
+ width:90px;height:90px;border-radius:20px;
+ margin:0 auto 2rem;overflow:hidden;
+ box-shadow:0 10px 40px rgba(0,0,0,0.5);
+ transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+
+.card-icon img{
+ width:100%;height:100%;object-fit:cover;
+ transition:inherit;
+}
+
+.card:hover .card-icon{
+ transform:scale(1.1) rotateY(10deg);
+ box-shadow:0 20px 60px var(--glow);
+}
+
+.card h3{
+ font-size:2rem;font-weight:900;margin-bottom:1.2rem;
+ background:linear-gradient(135deg,var(--primary),var(--secondary));
+ -webkit-background-clip:text;background-clip:text;
+ -webkit-text-fill-color:transparent;
+ letter-spacing:-0.01em;
+}
+
+.card p{
+ color:#e0e0e0;line-height:1.7;font-size:1.1rem;
+ margin-bottom:2.5rem;flex-grow:1;
+}
+
+.project-btn{
+ display:inline-flex;align-items:center;gap:0.8rem;
+ padding:1rem 2rem;border-radius:20px;
+ border:2px solid var(--primary);color:var(--primary);
+ font-weight:800;font-size:1.1rem;text-decoration:none;
+ transition:all 0.4s ease;
+ backdrop-filter:blur(10px);
+ width:fit-content;align-self:center;
+}
+
+.project-btn:hover{
+ background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+ color:white;transform:translateY(-5px);
+ box-shadow:0 20px 50px var(--glow);
+}
+
+/* FRIENDS 2X */
+.friend-avatar{
+ width:100px;height:100px;border-radius:50%;border:4px solid var(--primary);
+ margin-bottom:1.8rem;transition:all 0.4s ease;
+ box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+
+.card:hover .friend-avatar{
+ box-shadow:0 20px 60px var(--glow);transform:scale(1.1);
+}
+
+.friend-tag{
+ color:var(--secondary);font-size:1.1rem;font-weight:700;
+ background:linear-gradient(135deg,var(--glass-dark),rgba(0,0,0,0.7));
+ padding:0.8rem 1.8rem;border-radius:25px;display:inline-block;
+ margin-top:1.5rem;box-shadow:0 10px 30px rgba(0,0,0,0.6);
+ backdrop-filter:blur(15px);
+}
+
+/* CONTACT 2X */
+.contact-grid{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+ gap:3rem;max-width:1200px;width:100%;
+}
+
+.contact-card{
+ background:linear-gradient(135deg,var(--glass),rgba(0,0,0,0.8));
+ padding:3.5rem 3rem;border-radius:28px;
+ text-align:center;border:2px solid rgba(255,255,255,0.2);
+ transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+ min-height:280px;display:flex;flex-direction:column;justify-content:center;
+ position:relative;overflow:hidden;
+ box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+
+.contact-card::before{
+ content:'';position:absolute;top:0;left:0;width:100%;height:4px;
+ background:linear-gradient(135deg,var(--primary),var(--secondary));
+ transform:scaleX(0);transition:all 0.4s ease;
+}
+
+.contact-card:hover::before{transform:scaleX(1);}
+.contact-card:hover{
+ transform:translateY(-20px);box-shadow:0 50px 120px rgba(0,0,0,0.9);
+ border-color:var(--primary);
+}
+
+.contact-icon{
+ font-size:4rem;color:var(--primary);margin-bottom:2rem;
+ text-shadow:0 0 25px var(--glow);
+ transition:all 0.4s ease;
+}
+
+.contact-card:hover .contact-icon{transform:scale(1.2) rotate(10deg);}
+
+.contact-info{
+ font-size:1.4rem;font-weight:800;letter-spacing:-0.01em;
+}
+
+/* FOOTER 2X */
+footer{
+ background:linear-gradient(135deg,var(--glass-dark),rgba(0,0,0,0.95));
+ padding:5rem 4%;text-align:center;
+ border-top:3px solid rgba(255,255,255,0.2);
+ min-height:180px;display:flex;align-items:center;justify-content:center;
+ box-shadow:0 -20px 60px rgba(0,0,0,0.8);
+}
+
+.footer-links{
+ display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;
+ margin-bottom:1.5rem;
+}
+
+.footer-links a{
+ color:#ccc;font-weight:800;font-size:1.1rem;
+ padding:12px 24px;border-radius:16px;
+ transition:all 0.4s ease;
+ backdrop-filter:blur(10px);
+}
+
+.footer-links a:hover{
+ color:var(--primary);background:var(--glass);
+ transform:translateY(-4px);box-shadow:0 15px 40px var(--glow);
+}
+
+.footer-copy{
+ color:#999;font-size:1.1rem;font-weight:600;
+ letter-spacing:0.5px;
+}
+
+/* RESPONSIVE - SAME PERFECT SIZE */
+@media(max-width:900px){
+ .cards,.contact-grid{grid-template-columns:1fr;}
+ .hero-stats{grid-template-columns:repeat(2,1fr);}
+}
+
+@media(max-width:768px){
+ .hamburger{display:flex;}
+ .menu{
+  position:fixed;top:0;left:100%;width:100vw;height:100vh;
+  background:linear-gradient(135deg,rgba(0,0,0,0.98),rgba(0,0,0,1));
+  backdrop-filter:blur(40px);flex-direction:column;
+  justify-content:center;align-items:center;gap:3rem;
+  font-size:1.4rem;z-index:9999;transform:translateX(100%);
+  transition:all 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+ }
+ .menu.active{left:0;transform:translateX(0);}
+ 
+ nav{padding:1.2rem 3%;}
+ .logo{font-size:1.4rem;}
+ 
+ .section{padding:120px 3% 60px;}
+ .hero-container{padding:4rem 3rem;}
+ .hero h1{font-size:4rem;}
+ .section-title{font-size:3.5rem;}
+}
+
+/* SCROLL SNAP */
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth;}
+
+/* ANIMATIONS 2X */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+@keyframes countUp{from{opacity:0;transform:scale(0.5);}to{opacity:1;transform:scale(1);}}
+
+.card, .hero-container, .contact-card{animation:fadeInUp 1s ease-out forwards;}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+<div class="overlay"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+ <div class="logo">
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDgLC1E_Xt5zZRQZJDA8tfTLC5O85GzSlCQxXB6qIX6Dkk7DfNY_GaD3dz&s=10" alt="Starvos">
+  Starvos
+ </div>
+ 
+ <div class="hamburger" id="hamburger">
+  <span></span><span></span><span></span>
+ </div>
+ 
+ <div class="menu" id="menu">
+  <a href="#home">Home</a>
+  <a href="#projects">Projects</a>
+  <a href="#skills">Skills</a>
+  <a href="#friends">Friends</a>
+  <a href="#contact">Contact</a>
+ </div>
+</nav>
+
+<!-- HOME 2X -->
+<section class="hero section" id="home">
+ <div class="hero-container">
+  <h1>Starvos Bots</h1>
+  <p class="hero-subtitle">
+   Professional Discord Bot Developer<br>
+   <strong>3+ Years Experience</strong> • <strong>10K+ Servers</strong> • <strong>99.9% Uptime</strong>
+  </p>
+  
+  <div class="hero-stats">
+   <div class="stat-item">
+    <span class="stat-number">10K+</span>
+    <span class="stat-label">Active Servers</span>
+   </div>
+   <div class="stat-item">
+    <span class="stat-number">3+</span>
+    <span class="stat-label">Years Experience</span>
+   </div>
+   <div class="stat-item">
+    <span class="stat-number">99.9%</span>
+    <span class="stat-label">Uptime Guarantee</span>
+   </div>
+  </div>
+  
+  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;">
+   <a href="#projects" class="btn btn-primary">View Projects</a>
+   <a href="#contact" class="btn btn-secondary">Contact Me</a>
+  </div>
+ </div>
+</section>
+
+<!-- PROJECTS 2X -->
+<section class="section" id="projects">
+ <h2 class="section-title">Featured Projects</h2>
+ <div class="cards">
+  <div class="card">
+   <div class="card-icon">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDgLC1E_Xt5zZRQZJDA8tfTLC5O85GzSlCQxXB6qIX6Dkk7DfNY_GaD3dz&s=10" alt="Music Bot">
+   </div>
+   <h3>Starvos Music Bot</h3>
+   <p>Premium music bot supporting 4K+ sources with bass boost, 24/7 mode, DJ controls, Spotify/YouTube integration</p>
+   <a href="https://discord.com/oauth2/authorize?client_id=1391460434900549682&scope=bot%20applications.commands&permissions=8" target="_blank" class="project-btn">
+    Add to Discord →
+   </a>
+  </div>
+  
+  <div class="card">
+   <div class="card-icon">
+    <img src="https://media.tenor.com/n_oQGmPB_PcAAAAM/zoro-edit-roronoa-zoro.gif" alt="AutoMod">
+   </div>
+   <h3>Zoro AutoMod</h3>
+   <p>Advanced AI-powered automoderation with spam detection, raid protection, link filtering & real-time analytics</p>
+   <a href="https://discord.com/oauth2/authorize?client_id=1457317139131138186&scope=bot%20applications.commands&permissions=8" target="_blank" class="project-btn">
+    Add to Discord →
+   </a>
+  </div>
+ </div>
+</section>
+
+<!-- SKILLS 2X WITH YOUR IMAGES -->
+<section class="section" id="skills" style="background:linear-gradient(135deg,rgba(0,0,0,0.7),rgba(184,76,255,0.05));">
+ <h2 class="section-title">Technical Skills</h2>
+ <div class="cards">
+  <div class="card">
+   <div class="card-icon">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDdIZ7OqBMO20d1LFtxVkjDXtMOuWpU15Os2AfKlceXw&s=10" alt="Go">
+   </div>
+   <h3>Go</h3>
+   <p>High-performance Discord Gateway, WebSocket, gRPC microservices, sharding optimization</p>
+  </div>
+  
+  <div class="card">
+   <div class="card-icon">
+    <img src="https://www.citypng.com/public/uploads/preview/js-javascript-round-logo-icon-png-7017516947717339mnyf7eumy.png" alt="JavaScript">
+   </div>
+   <h3>JavaScript</h3>
+   <p>Node.js • Discord.js v14 • Express • Socket.io • PM2 clustering</p>
+  </div>
+  
+  <div class="card">
+   <div class="card-icon">
+    <img src="https://webandcrafts.com/_next/image?url=https%3A%2F%2Fadmin.wac.co%2Fuploads%2FFeatures_Of_Python_1_f4ccd6d9f7.jpg&w=4500&q=90" alt="Python">
+   </div>
+   <h3>Python</h3>
+   <p>Discord.py • asyncio • FastAPI • PostgreSQL • AI moderation systems</p>
+  </div>
+  
+  <div class="card">
+   <div class="card-icon">
+    <img src="https://arjancodes.com/_astro/how-to-build-a-simple-discord-bot-leading.1JGv7MUV.jpeg" alt="Discord API">
+   </div>
+   <h3>Discord API</h3>
+   <p>Slash Commands • Voice States • Sharding • Interactions • Gateway v10</p>
+  </div>
+  
+  <div class="card">
+   <div class="card-icon">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI7oaPrerkeZS3P8NjGTK5icZqvvh72cB5hQ&s" alt="Database">
+   </div>
+   <h3>Databases</h3>
+   <p>MongoDB • PostgreSQL • Redis • SQLite • Prisma ORM optimization</p>
+  </div>
+  
+  <div class="card">
+   <div class="card-icon">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6BzTN6asyGH_7VWlwjBwdYOzhw10YrcvA0v7QYoH-6A&s=10" alt="CSS">
+   </div>
+   <h3>Frontend</h3>
+   <p>CSS3 • Tailwind • Animations • Responsive Design • Web Dashboard</p>
+  </div>
+ </div>
+</section>
+
+<!-- FRIENDS 2X -->
+<section class="section" id="friends">
+ <h2 class="section-title">Collaborators</h2>
+ <div class="cards">
+  <div class="card">
+   <img src="https://cdn.discordapp.com/avatars/1420763001673224222/888558ecaf3d5c78bb6fed0bb8a0b03d.png?size=1024" alt="HopingBoy" class="friend-avatar">
+   <h3>InsaanXd</h3>
+   <p>Full-stack Developer & UI/UX Designer<br>Web dashboards & modern interfaces</p>
+   <span class="friend-tag">InsaanXd#1234</span>
+  </div>
+  
+  <div class="card">
+   <img src="https://cdn.discordapp.com/avatars/1210291131301101618/51d8542d359fb93d5f073615acf961b5.png?size=1024" alt="Insaan XD" class="friend-avatar">
+   <h3>HopingBoyz</h3>
+   <p>Backend Specialist & Security Expert<br>API optimization & protection</p>
+   <span class="friend-tag">HopingBoyz</span>
+  </div>
+ </div>
+</section>
+
+<!-- CONTACT 2X -->
+<section class="section" id="contact" style="background:linear-gradient(135deg,rgba(0,0,0,0.8),rgba(0,212,255,0.05));">
+ <h2 class="section-title">Get In Touch</h2>
+ <div class="contact-grid">
+  <div class="contact-card">
+   <span class="contact-icon">📧</span>
+   <div class="contact-info">starvosgamingyt@gmail.com</div>
+  </div>
+  
+  <div class="contact-card">
+   <span class="contact-icon">💬</span>
+   <div class="contact-info">Starvos#0001</div>
+  </div>
+  
+  <div class="contact-card">
+   <span class="contact-icon">🌐</span>
+   <div class="contact-info">Freelance Available<br><span style="font-size:0.9rem;color:#ccc;font-weight:500;">Response within 24h</span></div>
+  </div>
+  
+  <div class="contact-card">
+   <span class="contact-icon">⏰</span>
+   <div class="contact-info">GMT+1<br><span style="font-size:0.9rem;color:#ccc;font-weight:500;">20+ hours/week available</span></div>
+  </div>
+ </div>
+</section>
+
+<!-- FOOTER 2X -->
+<footer>
+ <div style="max-width:1200px;margin:0 auto;">
+  <div class="footer-links">
+   <a href="#home">Home</a>
+   <a href="#projects">Projects</a>
+   <a href="#skills">Skills</a>
+   <a href="#friends">Friends</a>
+   <a href="#contact">Contact</a>
+  </div>
+  <div class="footer-copy">
+   © 2026 Starvos • Professional Discord Bot Developer • All Rights Reserved
+  </div>
+ </div>
+</footer>
+
+<script>
+/* 2X SMOOTH INTERACTIONS */
+const hamburger=document.getElementById('hamburger');
+const menu=document.getElementById('menu');
+
+hamburger.addEventListener('click',()=>{
+ hamburger.classList.toggle('active');
+ menu.classList.toggle('active');
+ document.body.style.overflow=menu.classList.contains('active')?'hidden':'';
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor=>{
+ anchor.addEventListener('click',(e)=>{
+  e.preventDefault();
+  document.querySelector(anchor.getAttribute('href')).scrollIntoView({behavior:'smooth'});
+  hamburger.classList.remove('active');
+  menu.classList.remove('active');
+  document.body.style.overflow='';
+ });
+});
+
+window.addEventListener('scroll',()=>{
+ document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>100);
+});
+
+document.addEventListener('click',(e)=>{
+ if(!menu.contains(e.target)&&!hamburger.contains(e.target)){
+  hamburger.classList.remove('active');
+  menu.classList.remove('active');
+  document.body.style.overflow='';
+ }
+});
+
+/* PARALLAX EFFECT */
+window.addEventListener('mousemove',(e)=>{
+ const mouseX=e.clientX/window.innerWidth;
+ const mouseY=e.clientY/window.innerHeight;
+ document.querySelector('.hero-container').style.transform=
+  `translate(${mouseX*10-5}px, ${mouseY*10-5}px)`;
+});
+</script>
+
+</body>
+</html>
